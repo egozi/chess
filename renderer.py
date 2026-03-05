@@ -66,19 +66,27 @@ class Renderer:
     # ------------------------------------------------------------------
 
     def _load_piece_font(self, size: int) -> pygame.font.Font:
-        """Try several font names that render Unicode chess glyphs well."""
-        candidates = [
-            "segoeuisymbol", "seguisym",           # Windows
-            "notosans", "dejavusans",               # Linux
-            "applesymbols", "helvetica",            # macOS
+        """Try several font paths/names that render Unicode chess glyphs well."""
+        import os
+        # Prefer direct TTF paths (more reliable than SysFont name lookup)
+        path_candidates = [
+            "/usr/share/fonts/truetype/noto/NotoSansSymbols2-Regular.ttf",  # Linux
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",              # Linux fallback
+            "C:/Windows/Fonts/seguisym.ttf",                                # Windows
         ]
-        for name in candidates:
+        for path in path_candidates:
+            if os.path.exists(path):
+                font = pygame.font.Font(path, size)
+                w, _ = font.size("♔")
+                if w > 10:
+                    return font
+        # SysFont name fallback
+        for name in ("segoeuisymbol", "notosanssymbols2", "dejavusans", "applesymbols"):
             font = pygame.font.SysFont(name, size)
-            # Quick sanity check: does it render a king glyph wider than a dot?
             w, _ = font.size("♔")
             if w > 10:
                 return font
-        return pygame.font.SysFont(None, size)  # fallback
+        return pygame.font.SysFont(None, size)
 
     def _draw_board(self) -> None:
         for row in range(BOARD_SIZE):
