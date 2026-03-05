@@ -9,6 +9,59 @@ pip install -r requirements.txt
 python main.py
 ```
 
+---
+
+## Playing against Claude (LLM opponent)
+
+Once you have completed the assignment, you can play a real game against Claude AI. Claude plays as Black; you play as White.
+
+### 1. Get an Anthropic API key
+
+Sign up or log in at [console.anthropic.com](https://console.anthropic.com) and create an API key.
+
+### 2. Create your `.env` file
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and replace the placeholder with your real key:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+> **Important:** `.env` is listed in `.gitignore` and must never be committed to version control.
+
+### 3. Run the game
+
+```bash
+python main.py
+```
+
+After you make a move as White, the status bar will show **"Claude is thinking..."** and Claude's move will appear automatically within a few seconds.
+
+### How it works
+
+- After each White move, the full board state and move history are sent to Claude via the Anthropic API.
+- Claude receives a structured prompt describing the board in ASCII notation and responds with a single move (e.g. `e7 e5`).
+- The move is validated against the legal moves on the board before it is applied.
+- If Claude returns an illegal or unparseable move, the status bar will say so and you can continue playing.
+
+### Prompt template
+
+The prompt sent to Claude on every move lives in `llm_opponent.py` (`MOVE_PROMPT_TEMPLATE`). Feel free to edit it — for example, to ask Claude to explain its reasoning, adjust its playing style, or add personality.
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| "Claude is thinking..." never resolves | Check your API key in `.env` and your internet connection |
+| `ANTHROPIC_API_KEY not found` on startup | Make sure `.env` exists and contains the key |
+| Claude makes illegal moves | The board validator will catch these; try editing the prompt for clearer instructions |
+
+---
+
 ## What's provided (do not modify)
 
 | File | Description |

@@ -9,6 +9,12 @@ import pygame
 from game import Game
 from renderer import Renderer
 
+# LLM move event (only defined when llm_opponent is available)
+try:
+    from llm_opponent import LLM_MOVE_EVENT
+except Exception:
+    LLM_MOVE_EVENT = None
+
 WINDOW_SIZE = 640   # 8 squares × 80 px
 FPS = 60
 
@@ -29,6 +35,8 @@ def main() -> None:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 game.handle_click(event.pos)
+            elif LLM_MOVE_EVENT and event.type == LLM_MOVE_EVENT:
+                game.apply_llm_move(event.from_sq, event.to_sq)
 
         renderer.draw(game)
         pygame.display.flip()
